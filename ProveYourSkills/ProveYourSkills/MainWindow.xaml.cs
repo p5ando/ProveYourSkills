@@ -12,7 +12,7 @@ namespace ProveYourSkills
     public partial class MainWindow : Window
     {
         private ILogger<MainWindow> _logger;
-
+        
         public MainWindow(PostGridViewModel viewModel, ILogger<MainWindow> logger)
         {
             _logger = logger;
@@ -24,9 +24,18 @@ namespace ProveYourSkills
         public async Task InitializeGridContent(PostGridViewModel viewModel)
         {
             _logger.LogInformation("Initializing the Grid content");
-            await viewModel.InitializePosts();
+            
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.CancelAfter(5000);
+            
+            await viewModel.InitializePosts(tokenSource.Token);
 
-            foreach(var post in viewModel.PostCells!)
+            if (!viewModel.PostCells!.Any())
+            {
+                return;
+            }
+
+            foreach(var post in viewModel.PostCells)
             {
                 // create ui elements
                 var border = CreateBorder();

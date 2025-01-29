@@ -3,12 +3,13 @@ using Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 
 namespace ProveYourSkills
 {
     public class PostGridViewModel : INotifyPropertyChanged
     {
-        private IJsonPlaceholderClient _client;
+        private IPostApiClient _client;
         private ILogger<PostGridViewModel> _logger;
         private ObservableCollection<PostViewModel>? _postCells;
         public bool displayIds = true;
@@ -33,7 +34,7 @@ namespace ProveYourSkills
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public PostGridViewModel(IJsonPlaceholderClient client, ILogger<PostGridViewModel> logger)
+        public PostGridViewModel(IPostApiClient client, ILogger<PostGridViewModel> logger)
         {
             _client = client;
             _logger = logger;
@@ -51,10 +52,19 @@ namespace ProveYourSkills
         /// Loads all posts into the ViewModel
         /// </summary>
         /// <returns></returns>
-        public async Task InitializePosts()
+        public async Task InitializePosts(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Initializing the post collection");
-            PostCells = new ObservableCollection<PostViewModel>(await GetPostViewModels());
+            var collection = new ObservableCollection<PostViewModel>(await GetPostViewModels(cancellationToken));
+            
+            if (!collection.Any())
+            {
+                PostCells = collection;
+                _logger.LogWarning("Initialization has been cancelled. Skipping");
+                return;
+            }
+
+            PostCells = collection;
             _logger.LogInformation($"The post collection has been initialized with {PostCells.Count} element(s)");
         }
 
@@ -84,9 +94,9 @@ namespace ProveYourSkills
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<PostViewModel>> GetPostViewModels()
+        private async Task<IEnumerable<PostViewModel>> GetPostViewModels(CancellationToken cancellationToken)
         {
-            var posts = await _client.GetPosts();
+            var posts = await _client.GetPosts(cancellationToken);
             return posts.Select(post => new PostViewModel(post));
         }
     }

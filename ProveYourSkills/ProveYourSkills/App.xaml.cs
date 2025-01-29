@@ -1,11 +1,9 @@
 ﻿using Http;
 using Microsoft.Extensions.DependencyInjection;
-using ProveYourSkills.Models;
-using System.Configuration;
-using System.Data;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using ProveYourSkills.Http;
+using Serilog;
 using System.Windows;
 
 namespace ProveYourSkills
@@ -15,46 +13,48 @@ namespace ProveYourSkills
     /// </summary>
     public partial class App : Application
     {
-        private IServiceProvider? _serviceProvider;
+        public static IHost AppHost { get; private set; }
 
-        protected override void OnStartup(StartupEventArgs e)
+        public App()
         {
-            // setup di container
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+                .MinimumLevel.Warning()
+                .CreateLogger();
 
-            // open window
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            AppHost = Host.CreateDefaultBuilder()
+                .UseSerilog() // Use Serilog as the logging provider
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddLogging(loggingBuilder =>
+                    {
+                        loggingBuilder.ClearProviders();
+                        loggingBuilder.AddSerilog();
+                    });
+
+                    services.AddHttpClient();
+                    services.AddScoped<IRestApiClient, RestApiProxy>();
+                    services.AddScoped<IPostApiClient, PostApiClient>();
+
+                    // Register Views
+                    services.AddSingleton<PostGridViewModel>();
+                    services.AddSingleton<MainWindow>();
+                })
+                .Build();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await AppHost.StartAsync();
+
+            var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
-
-        // register service
-        private void ConfigureServices(IServiceCollection services)
+        private async void OnExit(object sender, ExitEventArgs e)
         {
-            // Configure Logging
-            services.AddLogging();
-            // HTTP Client
-            services.AddHttpClient(nameof(JsonPlaceholderClient), client =>
-            {
-                client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
-
-            services.AddScoped<IJsonPlaceholderClient, JsonPlaceholderClient>();
-
-            // Register Views
-            services.AddSingleton<PostGridViewModel>();
-            services.AddSingleton<MainWindow>();
-        }
-
-        private void OnExit(object sender, ExitEventArgs e)
-        {
-            // Dispose of services if needed
-            if (_serviceProvider is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
+            await AppHost.StopAsync();
+            Log.CloseAndFlush();
+            base.OnExit(e);
         }
     }
 }

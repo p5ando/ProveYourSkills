@@ -6,35 +6,20 @@ namespace ProveYourSkills.Http
 {
     public static class HttpUtilities
     {
-        public static async Task<T?> Get<T>(string endpoint, HttpClient httpClient, ILogger logger)
+        public static async Task<T?> GetContent<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken = default)
         {
-            logger.LogInformation("Sending Get HTTP request");
-            var responseMessage = await httpClient.GetAsync(endpoint);
-
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                logger.LogError($"HTTP GET response did not indicated success. Error code: {responseMessage.StatusCode}");
-                throw new Exception($"Failed to retrieve the data. Status code: {responseMessage.StatusCode}");
-            }
-
-            return await GetContent<T>(responseMessage, logger);
-        }
-
-        private static async Task<T?> GetContent<T>(HttpResponseMessage responseMessage, ILogger logger)
-        {
-            logger.LogInformation("Reading the response content");
+            cancellationToken.ThrowIfCancellationRequested();
             var rawContent = await responseMessage.Content.ReadAsStringAsync();
-            return DeserializeContent<T>(rawContent, logger);
+            return DeserializeContent<T>(rawContent);
         }
 
-        private static T? DeserializeContent<T>(string rawContent, ILogger logger)
+        public static T? DeserializeContent<T>(string rawContent)
         {
             var content = JsonSerializer.Deserialize<T>(rawContent);
 
             if (content == null)
             {
-                logger.LogWarning($"Cound not deserialize the responce content to the indicated type {typeof(T).Name}");
-                return default;
+                throw new JsonException($"Cound not deserialize the responce content to the indicated type {typeof(T).Name}");
             }
 
             return content;

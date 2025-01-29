@@ -43,7 +43,7 @@ namespace ProveYourSkills
             services.AddScoped<IJsonPlaceholderClient, JsonPlaceholderClient>();
 
             // Register Views
-            services.AddSingleton<IMainViewModel, MainViewModel>();
+            services.AddSingleton<PostGridViewModel>();
             services.AddSingleton<MainWindow>();
         }
 

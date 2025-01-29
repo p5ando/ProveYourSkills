@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace ProveYourSkills
 {
@@ -10,44 +10,62 @@ namespace ProveYourSkills
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(IMainViewModel viewModel)
+        public MainWindow(PostGridViewModel viewModel)
         {
-            InitializeComponent();
             DataContext = viewModel;
-        }
-    }
-
-    public interface IMainViewModel
-    {
-        ICommand SaveCommand { get; }
-    }
-
-    public class MainViewModel : IMainViewModel
-    {
-        private readonly ILogger<MainViewModel> _logger;
-        private readonly IJsonPlaceholderClient _placeholderClient;
-
-        public MainViewModel(ILogger<MainViewModel> logger, IJsonPlaceholderClient placeholderClient)
-        {
-            _logger = logger;
-            _placeholderClient = placeholderClient;
+            InitializeComponent();
+            this.Loaded += async (s, e) => await InitializeData(viewModel);
         }
 
-        private ICommand _saveCommand;
-        public ICommand SaveCommand =>
-            _saveCommand ??= new AsyncRelayCommand(ExecuteSaveAsync);
-
-        private async Task ExecuteSaveAsync()
+        public async Task InitializeData(PostGridViewModel viewModel)
         {
-            try
+            await viewModel.InitializePosts();
+
+            foreach(var post in viewModel.PostCells!)
             {
-                var json1 = await _placeholderClient.GetPosts();
-                _logger.LogInformation("Save command executed");
+                // create ui elements
+                var border = CreateBorder();
+                var textbox = CreateTextBlock();
+                var contentBinding =  CreateBinding(post);
+                
+                // connect elements and view model
+                textbox.SetBinding(TextBlock.TextProperty, contentBinding);
+                border.Child = textbox;
+                PostsGrid.Children.Add(border);
             }
-            catch (Exception ex)
+        }
+
+        private Binding CreateBinding(PostViewModel post)
+        {
+            var contentBinding = new Binding("Content")
             {
-                _logger.LogError(ex, "Error during save operation");
-            }
+                Source = post,
+                Mode = BindingMode.OneWay
+            };
+
+            return contentBinding;
+        }
+
+        private TextBlock CreateTextBlock()
+        {
+            var textbox = new TextBlock();
+
+            textbox.HorizontalAlignment = HorizontalAlignment.Center;
+            textbox.VerticalAlignment = VerticalAlignment.Center;
+            textbox.Foreground = new SolidColorBrush(Color.FromRgb(174, 68, 90));
+
+            return textbox;
+        }
+
+        private Border CreateBorder()
+        {
+            var border = new Border();
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 188, 185));
+            border.BorderThickness = new Thickness(1);
+            border.Padding = new Thickness(1);
+            border.Margin = new Thickness(1);
+
+            return border;
         }
     }
 }

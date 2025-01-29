@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ProveYourSkills.Models
+namespace ProveYourSkills.Core.Models
 {
     public class Post
     {

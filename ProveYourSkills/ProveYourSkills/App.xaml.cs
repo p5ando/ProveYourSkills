@@ -1,8 +1,6 @@
-﻿using Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using ProveYourSkills.Http;
+using ProveYourSkills.Infrastructure.DI;
 using Serilog;
 using System.Windows;
 
@@ -17,29 +15,25 @@ namespace ProveYourSkills
 
         public App()
         {
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
-                .MinimumLevel.Warning()
-                .CreateLogger();
-
             AppHost = Host.CreateDefaultBuilder()
                 .UseSerilog() // Use Serilog as the logging provider
-                .ConfigureServices((context, services) =>
-                {
-                    services.AddLogging(loggingBuilder =>
-                    {
-                        loggingBuilder.ClearProviders();
-                        loggingBuilder.AddSerilog();
-                    });
+                //.ConfigureServices((context, services) =>
+                //{
+                //    services.AddLogging(loggingBuilder =>
+                //    {
+                //        loggingBuilder.ClearProviders();
+                //        loggingBuilder.AddSerilog();
+                //    });
 
-                    services.AddHttpClient();
-                    services.AddScoped<IRestApiClient, RestApiProxy>();
-                    services.AddScoped<IPostApiClient, PostApiClient>();
+                //    services.AddHttpClient();
+                //    services.AddScoped<IRestApiClient, RestApiProxy>();
+                //    services.AddScoped<IPostApiClient, PostApiClient>();
 
-                    // Register Views
-                    services.AddSingleton<PostGridViewModel>();
-                    services.AddSingleton<MainWindow>();
-                })
+                //    // Register Views
+                //    services.AddSingleton<PostGridViewModel>();
+                //    services.AddSingleton<MainWindow>();
+                //})
+                .ConfigureServices(DIConfiguration.SetupServiceCollection)
                 .Build();
         }
 
@@ -50,6 +44,7 @@ namespace ProveYourSkills
             var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
+
         private async void OnExit(object sender, ExitEventArgs e)
         {
             await AppHost.StopAsync();

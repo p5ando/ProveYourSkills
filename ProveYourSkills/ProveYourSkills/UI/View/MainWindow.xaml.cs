@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ProveYourSkills.UI.ViewModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;

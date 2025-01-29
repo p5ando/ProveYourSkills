@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using Http;
 using Microsoft.Extensions.Logging;
+using ProveYourSkills.Core.Http;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
 
-namespace ProveYourSkills
+namespace ProveYourSkills.UI.ViewModel
 {
     public class PostGridViewModel : INotifyPropertyChanged
     {
@@ -56,7 +55,7 @@ namespace ProveYourSkills
         {
             _logger.LogInformation("Initializing the post collection");
             var collection = new ObservableCollection<PostViewModel>(await GetPostViewModels(cancellationToken));
-            
+
             if (!collection.Any())
             {
                 PostCells = collection;

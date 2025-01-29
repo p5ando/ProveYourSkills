@@ -1,5 +1,7 @@
-﻿using ProveYourSkills.Models;
+﻿using ProveYourSkills.Core.Models;
 using System.ComponentModel;
+
+namespace ProveYourSkills.UI.ViewModel;
 
 public class PostViewModel : INotifyPropertyChanged
 {

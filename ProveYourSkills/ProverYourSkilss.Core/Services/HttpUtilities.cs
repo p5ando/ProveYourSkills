@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
 
-namespace ProveYourSkills.Http
+namespace ProveYourSkills.Core.Http
 {
     public static class HttpUtilities
     {

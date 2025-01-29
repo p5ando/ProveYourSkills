@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
-using System.Text.Json;
 
-namespace ProveYourSkills.Http
+namespace ProveYourSkills.Infrastructure.Http
 {
     public interface IRestApiClient
     {

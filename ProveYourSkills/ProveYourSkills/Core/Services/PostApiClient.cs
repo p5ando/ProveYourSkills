@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ProveYourSkills.Http;
-using ProveYourSkills.Models;
+using ProveYourSkills.Core.Models;
+using ProveYourSkills.Infrastructure.Http;
 using System.Net.Http;
 using System.Text.Json;
 
-namespace Http;
+namespace ProveYourSkills.Core.Http;
 
 public interface IPostApiClient
 {

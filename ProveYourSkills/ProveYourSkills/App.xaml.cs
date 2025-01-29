@@ -1,6 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ProveYourSkills.Models;
 using System.Configuration;
 using System.Data;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace ProveYourSkills
@@ -29,8 +33,17 @@ namespace ProveYourSkills
         {
             // Configure Logging
             services.AddLogging();
+            // HTTP Client
+            services.AddHttpClient(nameof(JsonPlaceholderClient), client =>
+            {
+                client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddScoped<IJsonPlaceholderClient, JsonPlaceholderClient>();
 
             // Register Views
+            services.AddSingleton<IMainViewModel, MainViewModel>();
             services.AddSingleton<MainWindow>();
         }
 

@@ -25,10 +25,12 @@ namespace ProveYourSkills
     public class MainViewModel : IMainViewModel
     {
         private readonly ILogger<MainViewModel> _logger;
+        private readonly IJsonPlaceholderClient _placeholderClient;
 
-        public MainViewModel(ILogger<MainViewModel> logger)
+        public MainViewModel(ILogger<MainViewModel> logger, IJsonPlaceholderClient placeholderClient)
         {
             _logger = logger;
+            _placeholderClient = placeholderClient;
         }
 
         private ICommand _saveCommand;
@@ -39,6 +41,7 @@ namespace ProveYourSkills
         {
             try
             {
+                var json1 = await _placeholderClient.GetPosts();
                 _logger.LogInformation("Save command executed");
             }
             catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.Logging;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -10,15 +11,19 @@ namespace ProveYourSkills
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(PostGridViewModel viewModel)
+        private ILogger<MainWindow> _logger;
+
+        public MainWindow(PostGridViewModel viewModel, ILogger<MainWindow> logger)
         {
+            _logger = logger;
             DataContext = viewModel;
             InitializeComponent();
-            this.Loaded += async (s, e) => await InitializeData(viewModel);
+            this.Loaded += async (s, e) => await InitializeGridContent(viewModel);
         }
 
-        public async Task InitializeData(PostGridViewModel viewModel)
+        public async Task InitializeGridContent(PostGridViewModel viewModel)
         {
+            _logger.LogInformation("Initializing the Grid content");
             await viewModel.InitializePosts();
 
             foreach(var post in viewModel.PostCells!)
@@ -33,6 +38,9 @@ namespace ProveYourSkills
                 border.Child = textbox;
                 PostsGrid.Children.Add(border);
             }
+
+            _logger.LogInformation("The Grid content successfully initialized");
+
         }
 
         private Binding CreateBinding(PostViewModel post)
@@ -52,14 +60,16 @@ namespace ProveYourSkills
 
             textbox.HorizontalAlignment = HorizontalAlignment.Center;
             textbox.VerticalAlignment = VerticalAlignment.Center;
+            // colors should be defined in resource definitions or configuration
             textbox.Foreground = new SolidColorBrush(Color.FromRgb(174, 68, 90));
 
             return textbox;
         }
-
+        
         private Border CreateBorder()
         {
             var border = new Border();
+            // colors should be defined in resource definitions or configuration
             border.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 188, 185));
             border.BorderThickness = new Thickness(1);
             border.Padding = new Thickness(1);

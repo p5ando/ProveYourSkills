@@ -1,6 +1,9 @@
-﻿using ProveYourSkills.Models;
+﻿using Microsoft.Extensions.Logging;
+using ProveYourSkills.Http;
+using ProveYourSkills.Models;
 using System.Net.Http;
-using System.Text.Json;
+
+namespace Http;
 
 public interface IJsonPlaceholderClient
 {
@@ -9,47 +12,25 @@ public interface IJsonPlaceholderClient
 
 public class JsonPlaceholderClient : IJsonPlaceholderClient
 {
-    private IHttpClientFactory _httpClientFactory;
+    private const string PostsEndpoint = "posts";
 
-    public JsonPlaceholderClient(IHttpClientFactory httpClientFactory)
+    private IHttpClientFactory _httpClientFactory;
+    private ILogger<JsonPlaceholderClient> _logger;
+
+    public JsonPlaceholderClient(IHttpClientFactory httpClientFactory, ILogger<JsonPlaceholderClient> logger)
     {
         _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
+
     public async Task<IEnumerable<Post>> GetPosts()
     {
-        var posts = await Get<IEnumerable<Post>>("posts");
+        var httpClient = _httpClientFactory.CreateClient(nameof(JsonPlaceholderClient));
+
+        _logger.LogInformation("Initializing the GET HTTP reqeust towards the jsonplaceholder API");
+        var posts = await HttpUtilities.Get<IEnumerable<Post>>(PostsEndpoint, httpClient, _logger);
+        _logger.LogInformation("GET HTTP response towards the jsonplaceholder API successfully retrieved");
 
         return posts ?? Enumerable.Empty<Post>();
-    }
-
-    private async Task<T?> Get<T>(string endpoint)
-    {
-        var httpClient = _httpClientFactory.CreateClient(nameof(JsonPlaceholderClient));
-        var responseMessage = await httpClient.GetAsync(endpoint);
-
-        if (!responseMessage.IsSuccessStatusCode)
-        {
-            throw new Exception($"Failed to retrieve the data. Status code: {responseMessage.StatusCode}");
-        }
-
-        return await GetContent<T>(responseMessage);
-    }
-
-    private async Task<T?> GetContent<T>(HttpResponseMessage responseMessage)
-    {
-        var rawContent = await responseMessage.Content.ReadAsStringAsync();
-        return DeserializeContent<T>(rawContent);
-    }
-
-    private T? DeserializeContent<T>(string rawContent)
-    {
-        var content = JsonSerializer.Deserialize<T>(rawContent);
-
-        if (content == null)
-        {
-            return default;
-        }
-
-        return content;
     }
 }

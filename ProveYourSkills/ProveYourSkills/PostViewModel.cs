@@ -27,6 +27,10 @@ public class PostViewModel : INotifyPropertyChanged
         SwitchContent(displayId: true);
     }
 
+    /// <summary>
+    /// change Content property value based on displayId value
+    /// </summary>
+    /// <param name="displayId"></param>
     public void SwitchContent(bool displayId)
     {
         if (displayId)

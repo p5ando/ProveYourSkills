@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProveYourSkills.Core.Services;
@@ -15,8 +16,10 @@ public static class DIConfiguration
 {
     public static void SetupServiceCollection(HostBuilderContext context, IServiceCollection services)
     {
+        var appSettingsConfig = context.Configuration.GetSection(nameof(AppSettings));
+
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.File(appSettingsConfig.Get<AppSettings>().LogFileName, rollingInterval: RollingInterval.Day)
             .MinimumLevel.Information()
             .CreateLogger();
 
@@ -26,7 +29,7 @@ public static class DIConfiguration
             loggingBuilder.AddSerilog();
         });
 
-        services.Configure<AppSettings>(context.Configuration.GetSection("AppSettings"));
+        services.Configure<AppSettings>(appSettingsConfig);
         services.AddHttpClient();
         services.AddScoped<IUiComponentFactory, UiComponentFactory>();
         services.AddScoped<IGridCellBuilder, GridCellBuilder>();

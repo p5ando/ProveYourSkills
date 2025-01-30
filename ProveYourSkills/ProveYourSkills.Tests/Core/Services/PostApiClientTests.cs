@@ -8,7 +8,7 @@ using ProveYourSkills.Infrastructure.Http.Abstractions;
 using ProveYourSkills.Infrastructure.Http.Settings;
 using System.Text.Json;
 
-namespace TestProject1.Core.Services;
+namespace ProveYourSkills.Core.Services;
 
 public class PostApiClientTests
 {

@@ -5,7 +5,7 @@ using ProveYourSkills.Infrastructure.Http.Settings;
 using System.Net;
 using System.Text.Json;
 
-namespace TestProject1.Infrastructure.Http;
+namespace ProveYourSkills.Infrastructure.Http;
 
 public class RestApiClientTests
 {

@@ -1,91 +1,54 @@
 ﻿using Microsoft.Extensions.Logging;
+using ProveYourSkills.Core.Services.Abstractions;
 using ProveYourSkills.UI.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
 
-namespace ProveYourSkills
+namespace ProveYourSkills;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly ILogger<MainWindow> _logger;
+    private readonly IGridCellBuilder _gridCellBuilder;
+
+    public MainWindow(PostGridViewModel viewModel, IGridCellBuilder gridCellBuilder, ILogger<MainWindow> logger)
     {
-        private ILogger<MainWindow> _logger;
-        
-        public MainWindow(PostGridViewModel viewModel, ILogger<MainWindow> logger)
-        {
-            _logger = logger;
-            DataContext = viewModel;
-            InitializeComponent();
-            this.Loaded += async (s, e) => await InitializeGridContent(viewModel);
-        }
+        _logger = logger;
+        _gridCellBuilder = gridCellBuilder;
+        DataContext = viewModel;
+        InitializeComponent();
+        this.Loaded += async (s, e) => await InitializeGridContentAsync(viewModel);
+    }
 
-        public async Task InitializeGridContent(PostGridViewModel viewModel)
-        {
-            _logger.LogInformation("Initializing the Grid content");
+    public async Task InitializeGridContentAsync(PostGridViewModel viewModel)
+    {
+        _logger.LogInformation("Initializing the Grid content");
             
-            var tokenSource = new CancellationTokenSource();
-            tokenSource.CancelAfter(5000);
-            
-            await viewModel.InitializePosts(tokenSource.Token);
+        await viewModel.InitializePostsAsync();
 
-            if (!viewModel.PostCells!.Any())
-            {
-                return;
-            }
-
-            foreach(var post in viewModel.PostCells)
-            {
-                // create ui elements
-                var border = CreateBorder();
-                var textbox = CreateTextBlock();
-                var contentBinding =  CreateBinding(post);
-                
-                // connect elements and view model
-                textbox.SetBinding(TextBlock.TextProperty, contentBinding);
-                border.Child = textbox;
-                PostsGrid.Children.Add(border);
-            }
-
-            _logger.LogInformation("The Grid content successfully initialized");
-
-        }
-
-        private Binding CreateBinding(PostViewModel post)
+        foreach(var post in viewModel?.PostCells ?? Enumerable.Empty<PostViewModel>())
         {
-            var contentBinding = new Binding("Content")
-            {
-                Source = post,
-                Mode = BindingMode.OneWay
-            };
+            // create ui elements
+            //var border = _uiComponentFactory.CreateBorder();
+            //var textbox = _uiComponentFactory.CreateTextBlock();
+            //var contentBinding = _uiComponentFactory.CreateContentBinding(post);
 
-            return contentBinding;
+            // connect elements and view model
+            //textbox.SetBinding(TextBlock.TextProperty, contentBinding);
+            //border.Child = textbox;
+            var cell = _gridCellBuilder
+                .Reset()
+                .CreateBorder()
+                .CreateTextBlock()
+                .CreateBinding(post)
+                .Build();
+
+            PostsGrid.Children.Add(cell);
         }
 
-        private TextBlock CreateTextBlock()
-        {
-            var textbox = new TextBlock();
+        _logger.LogInformation("The Grid content successfully initialized");
 
-            textbox.HorizontalAlignment = HorizontalAlignment.Center;
-            textbox.VerticalAlignment = VerticalAlignment.Center;
-            // colors should be defined in resource definitions or configuration
-            textbox.Foreground = new SolidColorBrush(Color.FromRgb(174, 68, 90));
-
-            return textbox;
-        }
-        
-        private Border CreateBorder()
-        {
-            var border = new Border();
-            // colors should be defined in resource definitions or configuration
-            border.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 188, 185));
-            border.BorderThickness = new Thickness(1);
-            border.Padding = new Thickness(1);
-            border.Margin = new Thickness(1);
-
-            return border;
-        }
     }
 }

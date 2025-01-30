@@ -37,15 +37,15 @@ public class GridCellBuilder : IGridCellBuilder
         return this;
     }
 
-    public IGridCellBuilder CreateBorder()
+    public IGridCellBuilder CreateBorder(System.Windows.Media.Brush borderBrush)
     {
-        _border = _uiComponentFactoryService.CreateBorder();
+        _border = _uiComponentFactoryService.CreateBorder(borderBrush);
         return this;
     }
 
-    public IGridCellBuilder CreateTextBlock()
+    public IGridCellBuilder CreateTextBlock(System.Windows.Media.Brush textBrush)
     {
-        _textBlock = _uiComponentFactoryService.CreateTextBlock();
+        _textBlock = _uiComponentFactoryService.CreateTextBlock(textBrush);
         return this;
     }
 

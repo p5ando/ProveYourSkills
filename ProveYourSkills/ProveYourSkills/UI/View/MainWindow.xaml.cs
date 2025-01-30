@@ -2,6 +2,7 @@
 using ProveYourSkills.Core.Services.Abstractions;
 using ProveYourSkills.UI.ViewModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ProveYourSkills;
 
@@ -28,20 +29,15 @@ public partial class MainWindow : Window
             
         await viewModel.InitializePostsAsync();
 
-        foreach(var post in viewModel?.PostCells ?? Enumerable.Empty<PostViewModel>())
-        {
-            // create ui elements
-            //var border = _uiComponentFactory.CreateBorder();
-            //var textbox = _uiComponentFactory.CreateTextBlock();
-            //var contentBinding = _uiComponentFactory.CreateContentBinding(post);
+        var textBrush = (Brush)Application.Current.Resources["TextBrush"];
+        var borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
 
-            // connect elements and view model
-            //textbox.SetBinding(TextBlock.TextProperty, contentBinding);
-            //border.Child = textbox;
+        foreach (var post in viewModel?.PostCells ?? Enumerable.Empty<PostViewModel>())
+        {
             var cell = _gridCellBuilder
                 .Reset()
-                .CreateBorder()
-                .CreateTextBlock()
+                .CreateBorder(borderBrush)
+                .CreateTextBlock(textBrush)
                 .CreateBinding(post)
                 .Build();
 

@@ -5,7 +5,7 @@ using System.Windows.Data;
 namespace ProveYourSkills.Core.Services.Abstractions;
 public interface IUiComponentFactory
 {
-    TextBlock CreateTextBlock();
-    Border CreateBorder();
+    TextBlock CreateTextBlock(System.Windows.Media.Brush textBrush);
+    Border CreateBorder(System.Windows.Media.Brush borderBrush);
     Binding CreateContentBinding(PostViewModel post);
 }

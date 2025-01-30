@@ -20,23 +20,21 @@ public class UiComponentFactory : IUiComponentFactory
         return contentBinding;
     }
 
-    public TextBlock CreateTextBlock()
+    public TextBlock CreateTextBlock(Brush textBrush)
     {
         var textbox = new TextBlock();
 
         textbox.HorizontalAlignment = HorizontalAlignment.Center;
         textbox.VerticalAlignment = VerticalAlignment.Center;
-        // colors should be defined in resource definitions or configuration
-        textbox.Foreground = new SolidColorBrush(Color.FromRgb(174, 68, 90));
+        textbox.Foreground = textBrush;
 
         return textbox;
     }
 
-    public Border CreateBorder()
+    public Border CreateBorder(Brush borderBrush)
     {
         var border = new Border();
-        // colors should be defined in resource definitions or configuration
-        border.BorderBrush = new SolidColorBrush(Color.FromRgb(232, 188, 185));
+        border.BorderBrush = borderBrush;
         border.BorderThickness = new Thickness(1);
         border.Padding = new Thickness(1);
         border.Margin = new Thickness(1);

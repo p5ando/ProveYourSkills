@@ -12,7 +12,7 @@ using Serilog;
 
 namespace ProveYourSkills.Infrastructure.DI;
 
-public static class DIConfiguration
+public static class DiConfiguration
 {
     public static void SetupServiceCollection(HostBuilderContext context, IServiceCollection services)
     {

@@ -24,7 +24,7 @@ public partial class App : Application
                 config.SetBasePath(Directory.GetCurrentDirectory());
                 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             })
-            .ConfigureServices(DIConfiguration.SetupServiceCollection)
+            .ConfigureServices(DiConfiguration.SetupServiceCollection)
             .Build();
     }
 

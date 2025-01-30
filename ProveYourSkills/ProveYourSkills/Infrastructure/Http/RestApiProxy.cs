@@ -32,3 +32,26 @@ public class RestApiProxy : IRestApiClient
         return await restApiClient.GetAsync<T>(endpoint, settings, cancellationToken);
     }
 }
+
+public class RestApiProxy2 : IRestApiClient
+{
+    private IRestApiClient restApiClient;
+
+    public RestApiProxy2(IHttpClientFactory httpClientFactory)
+    {
+        restApiClient = new RestApiClient(httpClientFactory);
+    }
+
+    public async Task<T?> GetAsync<T>(string endpoint, RestApiSettings settings, CancellationToken cancellationToken = default)
+    {
+        var random = new Random();
+        var randomValue = random.Next(1, 100);
+
+        if (randomValue >= 75)
+        {
+            await Task.Delay(10000);
+        }
+
+        return await restApiClient.GetAsync<T>(endpoint, settings, cancellationToken);
+    }
+}

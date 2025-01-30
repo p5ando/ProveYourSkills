@@ -3,5 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ProveYourSkills">
     <Application.Resources>
+        <!-- Define brush resources -->
+        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#432E54"/>
+        <SolidColorBrush x:Key="GridBackgroundBrush" Color="#4B4376"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#AE445A"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#E8BCB9"/>
     </Application.Resources>
 </Application>

@@ -14,6 +14,7 @@
     - [Building the Executables](#building-the-executables)
     - [Running the App](#running-the-app)
 - [Contributors](#contributors)
+- [Bonus Question and Answers](#bonus-question-and-answers)
 
 ## Introduction
 
@@ -23,6 +24,9 @@ This is an assignment for a job application. The assignment was:
 - By default, display the post ID on each square. When clicking on a square, replace all post IDs with their respective user IDs.  
 - Clicking again toggles the display back to post IDs, and so on.  
 - Upload the project to a private GitHub repository without any references to the company (in the name, description, or files). The repository should include a well-structured `README.md` explaining how to run the application, potential challenges, and the reasoning behind design choices.
+
+
+At the end of the this document you can find the answers to the general questions that were part of this assigment.
 
 ## Solution
 
@@ -133,3 +137,75 @@ Run the `.exe` file from the generated folder.
 
 [Predrag Sando](https://github.com/p5ando/ProveYourSkills)  
 📧 sandopredrag95@gmail.com 
+
+## Bonus Question and Answers
+1. In C# there are several ways to make code run in multiple threads. To make things easier, the await keyword was introduced; what does this do?
+```
+Running code in multiple threads can be achieved in several ways, including using the Thread class, ThreadPool, or Task.
+async/await is used for asynchronous programming, primarily with Task but also with ValueTask<T> and custom awaitables.
+When a method returning a Task is awaited, execution is suspended at that point without blocking the calling thread.
+If running on a ThreadPool thread, the thread can return to the pool for other work. However, if running on a UI thread, execution will resume on the same UI thread after the task completes.
+Once the awaited Task finishes, execution resumes from the point where it was awaited.
+```
+2. If you make http requests to a remote API directly from a UI component, the UI will freeze for a while, how can you use await to avoid this and
+how does this work?
+```
+If there is a button, and we define the BulttonClick handler like this:
+
+public void ButtonClick(object s, EventArgs e)
+{ 
+   //...
+   var result = httpClient.GetString("some_random_url");
+   //...
+}
+
+It will block the UI thread. To avoid that we should use async methodm like following:
+
+public async void ButtonClick(object s, EventArgs e)
+{
+   //...
+   var resultTask = httpClient.GetStringAsync("some_random_url");
+   var result = await resultTask;
+   //...
+}
+
+By using Async/Await we ensure the UI elements remains responsive, which was not the case in the first example.
+Note that ButtonClick method has void as return type instead of Task, which would be the case if it wasn't the WPF application, since delegates do not support Task.
+```
+
+3. Imagine that you have to process a large unsorted CSV file with two columns: ProductId (int) and AvailableIn (ISO2 String, e.g. "US", "NL"). The goal is
+to group the file sorted by ProductId together with a list where the product is available. Example: 1, "DE" 2, "NL" 1, "US" 3, "US" Becomes: 1 -> ["DE", "US"]
+2 -> ["NL"] 3 -> ["US"]
+   1. How would you do this using LINQ syntax (write a short example)?
+   ```
+   csvLines
+      .Select(line => line.Split(","))
+      .Select(columnValues => new { id = columnValues[0], region = columnValues[1] })
+      .GroupBy(item => item.id)
+      .OrderBy(group => group.Key)
+   ```
+   2. The program crashes with an OutOfMemoryError after processing approx. 80%. What would you do to succeed?
+   ```
+   - Reading file as a stream
+   - IAsyncEnumerable and yield return
+   ```
+4. In C# there is an interface IDisposable.
+   1. Give an example of where and why to implement this interface.
+   ```
+   Should be used whenever we encounter the usage of resources that are not managed by .NET garbage collector such as database connections, file handles, sockets... 
+   IDisposable makes us the define a logic for releasing these resources.
+   ```
+   2. We can use disposable objects in a using block. What is the purpose of doing this?
+   ```
+   As soon as the end of the using block is reached the IDisposable.Dispose() method is called automatically and the resource will be released 
+   ```
+5. When a user logs in on our API, a JWT token is issued and our Outlook plugin uses this token for every request for authentication. Why and when is it (or isn't it) safe to use this?
+```
+It's safe:
+- if it's used over secure network such as HTTPS
+- expiration is defined
+- if token signature is validated/verified for each request on server side
+
+Not safe:
+- if you don't do safe things from above :)
+- if you store it indefinitely

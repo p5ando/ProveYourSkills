@@ -108,8 +108,10 @@ There are 2 options:
 - In command prompt run command: <code>dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false</code>
 - The .exe file will be generated in <code>ProveYourSkills\bin\Release\net8.0-windows\win-x64\publish</code> folder
 
-## Contributors
+### Running the app
+Run .exe file
 
+## Contributors
 [Predrag Sando](https://github.com/p5ando/ProveYourSkills) 
 <br>
 sandopredrag95@gmail.com 

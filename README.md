@@ -1,117 +1,135 @@
-<h1 align="center"> Prove Your Skils </h1> <br>
+# Prove Your Skills
 
-<p align="center">
-  <a href="https://itunes.apple.com/us/app/gitpoint/id1251245162?mt=8">
-    <img alt="Download on the App Store" title="App Store" src="http://i.imgur.com/0n2zqHD.png" width="140">
-  </a>
-
-  <a href="https://play.google.com/store/apps/details?id=com.gitpoint">
-    <img alt="Get it on Google Play" title="Google Play" src="http://i.imgur.com/mtGRPuM.png" width="140">
-  </a>
-</p>
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Features](#features)
-- [Feedback](#feedback)
+- [Solution](#solution)
+    - [Core Folder](#core-folder)
+    - [Infrastructure](#infrastructure)
+    - [UI](#ui)
+- [Application Workflow](#application-workflow)
+- [Starting the App](#starting-the-app)
+    - [Prerequisites](#prerequisites)
+    - [Getting the Repository](#getting-the-repository)
+    - [Building the Executables](#building-the-executables)
+    - [Running the App](#running-the-app)
 - [Contributors](#contributors)
-- [Build Process](#build-process)
-- [Backers](#backers-)
-- [Sponsors](#sponsors-)
-- [Acknowledgments](#acknowledgments)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
 
-[![Build Status](https://img.shields.io/travis/gitpoint/git-point.svg?style=flat-square)](https://travis-ci.org/gitpoint/git-point)
-[![Coveralls](https://img.shields.io/coveralls/github/gitpoint/git-point.svg?style=flat-square)](https://coveralls.io/github/gitpoint/git-point)
-[![All Contributors](https://img.shields.io/badge/all_contributors-73-orange.svg?style=flat-square)](./CONTRIBUTORS.md)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
-[![Gitter chat](https://img.shields.io/badge/chat-on_gitter-008080.svg?style=flat-square)](https://gitter.im/git-point)
+This is an assignment for a job application. The assignment was:  
 
-This is an assigment for the job application. The assigment was: 
-- write an WPF application that uses [jsonplaceholder API](http://jsonplaceholder.typicode.com/) to fetch 100 posts and render them all where each post is a separate square, 10 rows x 10
-columns.
-- By default, display the id on each square. When clicking on a square, the id should be replaced with the user id on all squares.
-- When clicking again, show the ids on all squares and so on and on and on...
-- A private Github repo without any references to Company (on the name, description or files), with a nice
-README.md file with how to run things, gotchas and some motivation behind choices if you feel the
-need of sharing
+- Write a WPF application that uses the [JSONPlaceholder API](http://jsonplaceholder.typicode.com/) to fetch 100 posts and display them in a 10x10 grid, where each post is represented by a square.
+- By default, display the post ID on each square. When clicking on a square, replace all post IDs with their respective user IDs.  
+- Clicking again toggles the display back to post IDs, and so on.  
+- Upload the project to a private GitHub repository without any references to the company (in the name, description, or files). The repository should include a well-structured `README.md` explaining how to run the application, potential challenges, and the reasoning behind design choices.
 
 ## Solution
-Solution contains 2 projects;
-- ProveYourSkills - the app source code
-- ProveYourSkills.Tests - the Unit tests
 
-ProveYourSkills is divaded in 3 folders:
-- Core - contains Models and Services that were used
-- Infrastructure - contains infrastructure elements for DI, Configuration, Http
-- UI - that contains Views and View models
+The solution contains two projects:  
 
+- `ProveYourSkills` - The application source code.  
+- `ProveYourSkills.Tests` - Unit tests.  
 
-Application is initilized in App.xml and App.xaml.cs using HostBuild from Microsoft.Extensions.Hosting NuGetpackage. Through the builder, a logger, a configuration file and Dependency Injection are set up.
-While building the application MVVM pattern was followed. As pattern defines, application contains Model, View, and ViewModels.
-There is only one Model called Post, that represents an individual post that is retrieved from the remote API.
-Only one View called MainWindow.xaml can be find in a solution, along with its code-behide C# class called MainWindow.xaml.cs. It defines a visual elements that are shown in the app.
-Also, there are 2 View Models:
-- PostViewModel.cs - defines the logic and data for each individual squre (Post) in the app
-- PostGridViewModel.cs - defines the logic and data for the main screen. In some way, this view encapsulates PostViewModel in the form of ObservableCollection
+The `ProveYourSkills` project is divided into three main folders:  
 
-### Core folder
-This folder Contains Model class that is described above and 3 more services:
-- PostApiClient - It is responsible for retrieveing the posts from [jsonplaceholder API](http://jsonplaceholder.typicode.com/). It relies on RestApiClient that will be mentioned in Infrastructure segment
-- GridCellBuilder - Handles the creation of the one squere that represents one post. It relies on UiComponentFactory
-- UiComponentFactory - Centralizes a creation of the the certain UI elements that are utilized in MainWindow.xaml.cs code-behide.
+- **Core** - Contains Models and Services.  
+- **Infrastructure** - Contains configuration, dependency injection, and HTTP utilities.  
+- **UI** - Contains Views and ViewModels.  
+
+The application is initialized in `App.xaml` and `App.xaml.cs` using `HostBuilder` from the `Microsoft.Extensions.Hosting` NuGet package. This setup configures logging, configuration files, and dependency injection.  
+
+The app follows the **MVVM (Model-View-ViewModel)** pattern:  
+
+- **Model:** A `Post` class represents an individual post retrieved from the API.  
+- **View:** A single view, `MainWindow.xaml`, defines the UI layout.  
+- **ViewModel:**  
+  - `PostViewModel.cs` - Handles logic and data for each square (post).  
+  - `PostGridViewModel.cs` - Manages the main screen and contains an `ObservableCollection<PostViewModel>`.  
+
+### Core Folder
+
+This folder contains the `Post` model and three services:  
+
+- **PostApiClient** - Retrieves posts from the [JSONPlaceholder API](http://jsonplaceholder.typicode.com/), relying on `RestApiClient` from the `Infrastructure` folder.  
+- **GridCellBuilder** - Handles the creation of a single square representing a post, using `UiComponentFactory`.  
+- **UiComponentFactory** - Centralizes the creation of UI elements used in `MainWindow.xaml.cs`.  
 
 ### Infrastructure
-The folder contains:
-- Configuration class - AppSettings.cs
-- Dependency Injection in form of DiConfiguration.cs
-- Http infrastructure - RestApiClient.cs for handling HTTP request and HttpUtilities.cs for common operation over HTTP requests 
 
+This folder includes:  
+
+- **AppSettings.cs** - Manages configuration settings.  
+- **DiConfiguration.cs** - Handles dependency injection setup.  
+- **HTTP utilities:**  
+  - `RestApiClient.cs` - Manages HTTP requests.  
+  - `HttpUtilities.cs` - Contains common HTTP operations.  
 
 ### UI
-Contains already mentioned View and ViewModel componenets, along with App.xaml and App.xaml.cs classes which are the starting point of the app
 
-## Application workflow
-As soon as the MainWindow is loaded, the <b>Loaded</b> event is fired. In the constructor of the MainWindow.xaml.cs class, the <b>InitializeGridContentAsync</b> method is subscribed for the event.
-It will initiate the call towards the [jsonplaceholder API](http://jsonplaceholder.typicode.com/) through the PostGridViewModel and as soon as the response is 
-retrieved, the appropriate UI elements are created.
-After the grid of 10x10 squares is created, you will be able to interact with the grid, by clicking on it which will result in the change of the cells' content (instead of Post Id, UserId will be presented).
-Click is registered using the functionalities of MouseBinding and the ToggleContentCommand that is defined in the PostGridViewModel. Triggering the command will result in interating through ObservableCollection and each PostViewModel
-and calls SwitchContent methon within PostViewModel. PostViewModel contains the individual instance of the Post retrieved from the remote API along with the Content property that is binded the Text of the squere (in the UI sense, the squre is nothing else then TextBlock).
-The SwitchContent model will operate over Content property and it will change the its value. By changing the value (through the set property) it also invokes INotifyPropertyChange.ProperyChanged event which 
-initiate the change of the UI representation.
+Contains the main view (`MainWindow.xaml`), view models, and application entry points (`App.xaml` and `App.xaml.cs`).
 
-## Starting the app
-### Prerequirements
-It is required to have .NET 8 installed on your machine. It can be downloaded from the following link: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
-### Pulling the repository to the local machine
-There are 2 options:
-- Downloading the .zip file from the git hub
-    1. Open https://github.com/p5ando/ProveYourSkills
-    2. Find <b>Code</b> button
-    3. Click on it, it will extend
-    4. Click on Download zip
-    5. Locate the file and unzip it
-- Running the git clone command
-    1. Open command prompt
-    2. Change directory to the location where you what to have a code backers by running the comand: <code>cd [C:\\SOME_PATH]</code>
-    3. Run command: <code>git clone https://github.com/p5ando/ProveYourSkills.git</code>
-### Building the executables
-- Navigate to the root of the project where the .sln file resides
-- In command prompt run command: <code>dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false</code>
-- The .exe file will be generated in <code>ProveYourSkills\bin\Release\net8.0-windows\win-x64\publish</code> folder
+## Application Workflow
 
-### Running the app
-Run .exe file
+When `MainWindow` is loaded, the `Loaded` event is triggered. In the constructor of `MainWindow.xaml.cs`, the `InitializeGridContentAsync` method subscribes to this event.
+
+1. **Fetching Data:**  
+   - `InitializeGridContentAsync` calls the API through `PostGridViewModel`.  
+   - Once the response is received, UI elements are dynamically created.  
+
+2. **Grid Display:**  
+   - A 10x10 grid of squares is created, each showing a post ID by default.  
+
+3. **Interaction:**  
+   - Clicking a square triggers the `ToggleContentCommand` in `PostGridViewModel`.  
+   - The command iterates through the `ObservableCollection<PostViewModel>` and calls `SwitchContent()`.  
+   - `SwitchContent()` toggles the displayed value between `Post.Id` and `Post.UserId`.  
+   - The UI updates automatically using `INotifyPropertyChanged`.  
+
+## Starting the App
+
+### Prerequisites
+
+.NET 8 is required. Download it from:  
+[https://dotnet.microsoft.com/en-us/download/dotnet/8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+
+### Getting the Repository
+
+#### Option 1: Download the ZIP file  
+
+1. Open [https://github.com/p5ando/ProveYourSkills](https://github.com/p5ando/ProveYourSkills).  
+2. Click the **Code** button.  
+3. Select **Download ZIP** and extract the file.  
+
+#### Option 2: Clone the Repository  
+
+Run the following commands in the terminal:
+
+```sh
+git clone https://github.com/p5ando/ProveYourSkills.git
+cd ProveYourSkills
+```
+
+### Building the Executables
+
+1. Navigate to the project root (where the `.sln` file is located).  
+2. Run the following command to build the application:
+
+```sh
+dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false
+```
+
+3. The `.exe` file will be generated in:  
+
+```
+ProveYourSkills\bin\Release\net8.0-windows\win-x64\publish
+```
+
+### Running the App
+
+Run the `.exe` file from the generated folder.
 
 ## Contributors
-[Predrag Sando](https://github.com/p5ando/ProveYourSkills) 
-<br>
-sandopredrag95@gmail.com 
+
+[Predrag Sando](https://github.com/p5ando/ProveYourSkills)  
+📧 sandopredrag95@gmail.com 

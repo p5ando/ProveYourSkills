@@ -23,7 +23,7 @@ public class PostApiClientTests
         _mockLogger = new Mock<ILogger<PostApiClient>>();
         _mockOptions = new Mock<IOptionsSnapshot<AppSettings>>();
 
-        var appSettings = new AppSettings { BaseUri = "https://jsonplaceholder.typicode.com/" };
+        var appSettings = new AppSettings { BaseUri = "https://jsonplaceholder.typicode.com/", LogFileName = "doesn't matter here" };
         _mockOptions.Setup(o => o.Value).Returns(appSettings);
 
         _postApiClient = new PostApiClient(_mockRestApiClient.Object, _mockLogger.Object, _mockOptions.Object);

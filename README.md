@@ -88,13 +88,28 @@ and calls SwitchContent methon within PostViewModel. PostViewModel contains the 
 The SwitchContent model will operate over Content property and it will change the its value. By changing the value (through the set property) it also invokes INotifyPropertyChange.ProperyChanged event which 
 initiate the change of the UI representation.
 
+## Starting the app
+### Prerequirements
+It is required to have .NET 8 installed on your machine. It can be downloaded from the following link: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+### Pulling the repository to the local machine
+There are 2 options:
+- Downloading the .zip file from the git hub
+    1. Open https://github.com/p5ando/ProveYourSkills
+    2. Find <b>Code</b> button
+    3. Click on it, it will extend
+    4. Click on Download zip
+    5. Locate the file and unzip it
+- Running the git clone command
+    1. Open command prompt
+    2. Change directory to the location where you what to have a code backers by running the comand: <code>cd [C:\\SOME_PATH]</code>
+    3. Run command: <code>git clone https://github.com/p5ando/ProveYourSkills.git</code>
+### Building the executables
+- Navigate to the root of the project where the .sln file resides
+- In command prompt run command: <code>dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false</code>
+- The .exe file will be generated in <code>ProveYourSkills\bin\Release\net8.0-windows\win-x64\publish</code> folder
+
 ## Contributors
 
 [Predrag Sando](https://github.com/p5ando/ProveYourSkills) 
 <br>
 sandopredrag95@gmail.com 
-
-## Starting the app
-### Prerequirements
-It is required to have .NET 8 installed on your machine
-### 
